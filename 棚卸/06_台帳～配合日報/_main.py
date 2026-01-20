@@ -18,7 +18,7 @@ while tenth.weekday() >= 5 or jpholiday.is_holiday(tenth):
 last_month = today - dt.timedelta(days=20)
 print(last_month)
 formatted_month = last_month.strftime("%Y.%m")
-if today.month == 4:
+if today.month == 1:
     formatted_year = str(today.year - 1)
 else:
     formatted_year = str(today.year)
@@ -44,7 +44,10 @@ pyautogui.press("down")
 pyautogui.press("enter")
 time.sleep(0.5)
 
-lastmonth_start = dt.date(month=today.month - 1, year=today.year, day=1)    # 先月の初日を取得
+if today.month == 1:
+    lastmonth_start = dt.date(year=today.year - 1, month=12, day=1)
+else:
+    lastmonth_start = dt.date(year=today.year, month=today.month - 1, day=1)    # 先月の初日を取得
 
 thismonth_start = dt.date(month=today.month, year=today.year, day=1)        # 今月の初日を取得
 lastmonth_end = thismonth_start - dt.timedelta(days=1)                      # 今月1日から、-1日することで先月の最終日を取得

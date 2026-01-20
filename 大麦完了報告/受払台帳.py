@@ -56,7 +56,7 @@ def create_受払台帳():
     ws.PageSetup.CenterFooter = "&P/&N"             # 1/Nページ
     ws.PageSetup.PrintTitleRows = "$7:$8"           # タイトル行
     #ws.PrintOut()
-    #wb.Close(SaveChanges=True)  # 保存して閉じる
+    wb.Close(SaveChanges=True)  # 保存して閉じる
     print("--------------------受払台帳の処理が完了しました。")
     # 加工完了4で利用
     return loss

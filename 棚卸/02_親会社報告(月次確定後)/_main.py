@@ -16,7 +16,7 @@ today = dt.datetime.now()                               # 本日の日付を取�
 last_month = today - dt.timedelta(days=10)              # 先月
 formatted_date = last_month.strftime("%Y.%m")           # 現在の日付をYYYY.MM形式で取得
 formatted_month = f"{formatted_date}_"                  # "YYYY.MM_"に変換
-if today.month == 4:
+if today.month == 1:
     formatted_year = str(today.year - 1)
 else:
     formatted_year = str(today.year)

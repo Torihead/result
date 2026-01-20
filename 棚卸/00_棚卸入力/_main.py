@@ -4,6 +4,7 @@ import time
 import datetime as dt
 import jpholiday
 import win32com.client as win32
+import os
 
 today = dt.date.today()
 year = today.year
@@ -24,10 +25,8 @@ else:
     formatted_year = str(today.year)
 
 this_month = today.strftime("%Y.%m")
-
-formad_month = last_month.strftime("%Y.%#m")
-print(formad_month)
-
+formad_month = today.strftime("%Y.%m")
+print("formad_month=", formad_month)
 
 # アプリ起動
 subprocess.run(["mstsc.exe", r"C:\Users\USER06\Desktop\OAシステム.rdp"])
@@ -98,9 +97,28 @@ pyautogui.press("3")
 pyautogui.press("F5")
 time.sleep(1)
 
-filepath_hukuromono = fr"\\MC10\share\MICHINOK_共有\0.共有書類\原料\袋物\{formatted_month}月袋物在庫表.xlsx"
-wb_hukuromono = excel.Workbooks.Open(filepath_hukuromono)
-ws_hukuromono = wb_hukuromono.worksheets(formad_month)
+file_candidate = fr"\\MC10\share\MICHINOK_共有\0.共有書類\原料\袋物\{formad_month}月袋物在庫表.xlsx"
+fallback_candidate = fr"\\MC10\share\MICHINOK_共有\0.共有書類\原料\袋物\{formatted_month}月袋物在庫表.xlsx"
+
+# 存在確認して優先的に使用。どちらもなければ明確なエラーを出す
+if os.path.exists(file_candidate):
+    filepath_hukuromono = file_candidate
+elif os.path.exists(fallback_candidate):
+    filepath_hukuromono = fallback_candidate
+else:
+    raise FileNotFoundError(f"ファイルが見つかりません: {file_candidate} または {fallback_candidate}")
+
+# まず通常オープンを試み、失敗したら読み取り専用で再試行
+try:
+    wb_hukuromono = excel.Workbooks.Open(filepath_hukuromono)
+except Exception as e:
+    try:
+        wb_hukuromono = excel.Workbooks.Open(filepath_hukuromono, ReadOnly=True)
+    except Exception as e2:
+        raise RuntimeError(f"Excelファイルを開けませんでした: {filepath_hukuromono}\nエラー1: {e}\nエラー2: {e2}")
+
+ws_hukuromono = wb_hukuromono.Worksheets(formad_month)
+#ws_hukuromono = wb_hukuromono.Worksheets("2025.11")
 
 # 代替パス
 #fallback_path = fr"\\MC10\share\MICHINOK_共有\0.共有書類\原料\袋物\{formatted_month}月袋物在庫表.xlsx"
@@ -120,10 +138,24 @@ for row_A, row_F, row_D in zip(range(4, last_row + 1, 4),range(7, last_row + 1, 
     quantity_Value = ws_hukuromono.Range(f"F{row_F}").Value
     weight_Value = ws_hukuromono.Range(f"D{row_D}").Value
 
+    # コードが無ければスキップ（空行の可能性）
+    if code_Value is None:
+        continue
+    try:
+        code_int = int(code_Value)
+    except Exception:
+        continue
+
+    # 数量や重量が None の場合は 0 を扱う
+    try:
+        quantity_int = int(quantity_Value) if quantity_Value is not None else 0
+    except Exception:
+        quantity_int = 0
+
     zaiko_list.append({
-        "code":int(code_Value),
-        "quantity":int(quantity_Value),
-        "weight":weight_Value
+        "code": code_int,
+        "quantity": quantity_int,
+        "weight": weight_Value
         })
 for item in zaiko_list:
     if item["code"] == 3173:                # ヘイ粉の重量 400kg/TB

@@ -105,6 +105,8 @@ if (product_sum_tyosa - 1) == product_sum_genryou:
     wb_source.Sheets(1).Range("AY13").Value = meetfeed_sum
 else:
     print("生産量の合計に差異はありません。調整は行いません。")
+
+product_sum_tyosa = int(wb_source.Sheets(1).Range("BY13").Value)                     # 数値の再取得
 print(f"調整後の肉牛用 合計: {meetfeed_sum}\n調整後の調査票の生産量合計: {product_sum_tyosa}")
 wb_genryou.Close(SaveChanges=False)
 

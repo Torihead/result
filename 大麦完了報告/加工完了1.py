@@ -156,8 +156,8 @@ def create_加工完了1():
         ws.PageSetup.LeftMargin = excel.Application.InchesToPoints(0.25)
         ws.PageSetup.RightMargin = excel.Application.InchesToPoints(0.25)
     #wb.Worksheets(print_list).PrintOut()
-    #wb.Close(SaveChanges=True)  # 保存して閉じる
-    #excel.Application.Quit()     # Excelアプリケーションを終了
+    wb.Close(SaveChanges=True)  # 保存して閉じる
+    excel.Application.Quit()     # Excelアプリケーションを終了
     print("--------------------加工完了1の処理が完了しました。")
     return entries_value
 

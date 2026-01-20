@@ -17,7 +17,7 @@ while tenth.weekday() >= 5 or jpholiday.is_holiday(tenth):
 last_month = today - dt.timedelta(days=20)
 print(last_month)
 formatted_month = last_month.strftime("%Y.%m")
-if today.month == 4:
+if today.month == 1:
     formatted_year = str(today.year - 1)
 else:
     formatted_year = str(today.year)
@@ -115,7 +115,7 @@ name = f"{formatted_month}_製品入出庫表"
 pyperclip.copy(name)
 pyautogui.hotkey("ctrl", "v")
 pyautogui.press("enter", presses=2, interval=1)
-time.sleep(1)
+time.sleep(2)
 pyautogui.click(x=1899, y=14)           # 閉じるボタンをクリック
 pyautogui.press("F12")
 pyautogui.press("e")
@@ -123,17 +123,27 @@ pyautogui.press("e")
 print("--------------------製品入出庫表の処理が終了しました。")
 
 # 棚卸表のフォルダ移動
+import os
 import shutil
 before_path = r"\\MC10\share\OA\EXCEL\OUT\TANAOROSI_HYO.XLS"
 output_path = fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_month}月\08　月次帳\4 棚卸表"
 shutil.copy(before_path, output_path)
+os.rename(fr"{output_path}\TANAOROSI_HYO.XLS", fr"{output_path}\{formatted_month}_TANAOROSI_HYO.XLS")
+
+# 棚卸表のpdf変換
+import win32com.client as win32
+excel = win32.Dispatch("Excel.Application")
+excel.Visible = False
+filepath = fr"{output_path}\{formatted_month}_TANAOROSI_HYO.XLS"
+wb = excel.Workbooks.Open(filepath)
+wb.Sheets(1).Select()
+output_pdf_path = fr"{output_path}\{formatted_month}_TANAOROSI_HYO.pdf"
+excel.ActiveSheet.ExportAsFixedFormat(0, output_pdf_path)
+wb.Close(SaveChanges=True)
 
 print("--------------------棚卸表の処理が終了しました。")
 
 # 検尺表 を作成してエクスポート
-import win32com.client as win32
-excel = win32.Dispatch("Excel.Application")
-excel.Visible = False
 filepath = r"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\検尺値入力表.xls"
 wb = excel.Workbooks.Open(filepath)
 

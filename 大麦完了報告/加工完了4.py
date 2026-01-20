@@ -88,7 +88,7 @@ def create_加工完了4():
     ws.PageSetup.FitToPagesWide = False             # 横は自動調整
     ws.PageSetup.FitToPagesTall = False             # 縦は自動調整
     #ws.PrintOut()
-    #wb.Close(SaveChanges=True)  # 保存して閉じる
+    wb.Close(SaveChanges=True)  # 保存して閉じる
     print("--------------------加工完了4の処理が完了しました。")
     # 加工完了1で利用
     print(name_list)
