@@ -1,43 +1,25 @@
-import subprocess
 import pyautogui
 import time
-import datetime as dt
-import jpholiday
+import os
+import shutil
+import win32com.client as win32
+import pyperclip
+from common_utils import get_date_info
+from app_automation import RDPApp, ExcelUtils
 
-today = dt.date.today()
-year = today.year
-month = today.month
-tenth = dt.date(year, month, 10)
+# 日付情報を取得
+dates = get_date_info()
+today = dates['today']
+formatted_month = dates['formatted_month']
+formatted_year = dates['formatted_year']
+last_month = dates['last_month']
 
-# 10日が土日祝日なら、前営業日に変更
-while tenth.weekday() >= 5 or jpholiday.is_holiday(tenth):
-    tenth -= dt.timedelta(days=1)
-
-# 先月の10日
-last_month = today - dt.timedelta(days=20)
-print(last_month)
-formatted_month = last_month.strftime("%Y.%m")
-if today.month == 1:
-    formatted_year = str(today.year - 1)
-else:
-    formatted_year = str(today.year)
-
-# アプリ起動
-subprocess.run(["mstsc.exe", r"C:\Users\USER06\Desktop\OAシステム.rdp"])
-pyautogui.sleep(5)
-
-# 起動後アプリの対象クリック、ログイン処理
-pyautogui.click(x=826, y=448)
-pyautogui.write("12", interval=0.1)
-pyautogui.press("enter", presses=3, interval=0.5)
-time.sleep(2)
+# RDP接続・ログイン
+RDPApp.launch_and_login(sleep_time=5)
 
 # 棚卸チェックリスト
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.press("tab", presses=2)
+RDPApp.navigate_tabs(4)
+RDPApp.press_multiple_tabs(2)
 pyautogui.press("enter")
 time.sleep(1)
 pyautogui.write(f"{formatted_month}", interval=0.2)
@@ -49,7 +31,6 @@ items = [
         {"code": "4", "label": "棚卸チェックリスト(倉庫製品)"}
         ]
 
-import pyperclip
 for item in items:
     pyautogui.write(item["code"])
     pyautogui.press("F6")
@@ -67,7 +48,7 @@ for item in items:
     time.sleep(1)
     pyautogui.press("tab", presses=6, interval=0.2)
 
-    name = f"{formatted_month}_{item["label"]}"
+    name = f"{formatted_month}_{item['label']}"
     pyperclip.copy(name)
     pyautogui.hotkey("ctrl", "v")
     pyautogui.press("enter", presses=2, interval=1)
@@ -123,15 +104,12 @@ pyautogui.press("e")
 print("--------------------製品入出庫表の処理が終了しました。")
 
 # 棚卸表のフォルダ移動
-import os
-import shutil
 before_path = r"\\MC10\share\OA\EXCEL\OUT\TANAOROSI_HYO.XLS"
 output_path = fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_month}月\08　月次帳\4 棚卸表"
 shutil.copy(before_path, output_path)
 os.rename(fr"{output_path}\TANAOROSI_HYO.XLS", fr"{output_path}\{formatted_month}_TANAOROSI_HYO.XLS")
 
 # 棚卸表のpdf変換
-import win32com.client as win32
 excel = win32.Dispatch("Excel.Application")
 excel.Visible = False
 filepath = fr"{output_path}\{formatted_month}_TANAOROSI_HYO.XLS"

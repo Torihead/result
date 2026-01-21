@@ -3,6 +3,7 @@ import datetime as dt
 import shutil as sh
 import pythoncom
 from win32com.client import Dispatch
+from common_utils import get_date_info
 
 # 割戻表作成の関数の呼び出し
 import 割戻表 as wri
@@ -12,14 +13,12 @@ wri.main()
 import 親会社報告書 as oya
 oya.main()
 
-today = dt.datetime.now()                               # 本日の日付を取得
-last_month = today - dt.timedelta(days=10)              # 先月
-formatted_date = last_month.strftime("%Y.%m")           # 現在の日付をYYYY.MM形式で取得
-formatted_month = f"{formatted_date}_"                  # "YYYY.MM_"に変換
-if today.month == 1:
-    formatted_year = str(today.year - 1)
-else:
-    formatted_year = str(today.year)
+# 日付情報を取得
+dates = get_date_info()
+today = dt.datetime.now()
+formatted_date = dates['formatted_month']
+formatted_month = f"{formatted_date}_"
+formatted_year = dates['formatted_year']
 
 os.startfile(fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_date}月")
 

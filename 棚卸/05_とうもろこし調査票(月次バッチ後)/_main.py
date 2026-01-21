@@ -1,45 +1,23 @@
-import subprocess
 import time
 import win32com.client as win32
-import datetime as dt
-import jpholiday
 import pyautogui
 import shutil
+from common_utils import get_date_info
+from app_automation import RDPApp, ExcelUtils
 
-today = dt.date.today()
-year = today.year
-month = today.month
-tenth = dt.date(year, month, 10)
+# 日付情報を取得
+dates = get_date_info()
+today = dates['today']
+formatted_month = dates['formatted_month']
+formatted_year = dates['formatted_year']
+last_month = dates['last_month']
+format_month = dates['format_month']
 
-# 10日が土日祝日なら、前営業日に変更
-while tenth.weekday() >= 5 or jpholiday.is_holiday(tenth):
-    tenth -= dt.timedelta(days=1)
-
-# 先月の10日
-last_month = today - dt.timedelta(days=20)
-print(last_month)
-formatted_month = last_month.strftime("%Y.%m")
-if today.month == 4:
-    formatted_year = str(today.year - 1)
-else:
-    formatted_year = str(today.year)
-format_month = last_month.strftime("%Y%m")
-
-# アプリ起動
-subprocess.run(["mstsc.exe", r"C:\Users\USER06\Desktop\OAシステム.rdp"])
-pyautogui.sleep(5)
-
-# 起動後アプリの対象クリック、ログイン処理
-pyautogui.click(x=826, y=448)
-pyautogui.write("12", interval=0.1)
-pyautogui.press("enter", presses=3, interval=0.5)
-time.sleep(2)
+# RDP接続・ログイン
+RDPApp.launch_and_login(sleep_time=5)
 
 # とうもろこし調査票のタブを選択
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
+RDPApp.navigate_tabs(4)
 pyautogui.press("tab")
 pyautogui.press("right")
 pyautogui.press("enter")

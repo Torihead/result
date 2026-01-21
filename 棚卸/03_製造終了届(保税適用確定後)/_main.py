@@ -1,52 +1,26 @@
-import subprocess
 import pyautogui
 import time
-import datetime as dt
-import jpholiday
 import pyperclip
 import os
 import win32com.client as win32com
+from common_utils import get_date_info
+from app_automation import RDPApp, ExcelUtils
 
-today = dt.date.today()
-year = today.year
-month = today.month
-tenth = dt.date(year, month, 10)
+# 日付情報を取得
+dates = get_date_info()
+last_month = dates['last_month']
+formatted_month = dates['formatted_month']
+formatted_year = dates['formatted_year']
+tenth = dates['tenth']
 
-# 10日が土日祝日なら、前営業日に変更
-while tenth.weekday() >= 5 or jpholiday.is_holiday(tenth):
-    tenth -= dt.timedelta(days=1)
-
-# 先月の10日
-last_month = today - dt.timedelta(days=20)
-print(last_month)
-formatted_month = last_month.strftime("%Y.%m")
-if today.month == 1:
-    formatted_year = str(today.year - 1)
-else:
-    formatted_year = str(today.year)
-
-
-
-# まず手差しの印刷用紙をセットするよう促す
+# 手差しの印刷用紙をセットするよう促す
 pyautogui.alert("製造終了届の処理を開始します。\n最初に、プリンターの手差しトレイにA4用紙をセットしてください。\nセット後、OKを押してください。")
 
-
-# アプリ起動
-subprocess.run(["mstsc.exe", r"C:\Users\USER06\Desktop\OAシステム.rdp"])
-pyautogui.sleep(3)
-
-# 起動後アプリの対象クリック、ログイン処理
-pyautogui.click(x=826, y=448)
-pyautogui.write("12", interval=0.1)
-pyautogui.press("enter", presses=3, interval=0.5)
-time.sleep(2)
+# RDP接続・ログイン
+RDPApp.launch_and_login(sleep_time=3)
 
 # 終了届をOUT出力
-pyautogui.hotkey("ctrl", "pageup")  # 月次処理を選択
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
+RDPApp.navigate_tabs(5)
 pyautogui.press("tab")
 pyautogui.press("right", presses=2, interval=0.2)
 pyautogui.press("enter")  # 製造終了届を選択

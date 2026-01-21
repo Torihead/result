@@ -1,56 +1,28 @@
-import subprocess
 import pyautogui
 import time
-import datetime as dt
-import jpholiday
 import pyperclip
+from common_utils import get_date_info, get_lastmonth_start, get_lastmonth_end
+from app_automation import RDPApp, ExcelUtils
 
-today = dt.date.today()
-year = today.year
-month = today.month
-tenth = dt.date(year, month, 10)
+# 日付情報を取得
+dates = get_date_info()
+today = dates['today']
+formatted_month = dates['formatted_month']
+formatted_year = dates['formatted_year']
+last_month = dates['last_month']
+lastmonth_start = dates['lastmonth_start']
+lastmonth_end = dates['lastmonth_end']
 
-# 10日が土日祝日なら、前営業日に変更
-while tenth.weekday() >= 5 or jpholiday.is_holiday(tenth):
-    tenth -= dt.timedelta(days=1)
-
-# 先月の10日
-last_month = today - dt.timedelta(days=20)
-print(last_month)
-formatted_month = last_month.strftime("%Y.%m")
-if today.month == 1:
-    formatted_year = str(today.year - 1)
-else:
-    formatted_year = str(today.year)
-
-# アプリ起動
-subprocess.run(["mstsc.exe", r"C:\Users\USER06\Desktop\OAシステム.rdp"])
-pyautogui.sleep(5)
-
-# 起動後アプリの対象クリック、ログイン処理
-pyautogui.click(x=826, y=448)
-pyautogui.write("12", interval=0.1)
-pyautogui.press("enter", presses=3, interval=0.5)
-time.sleep(2)
+# RDP接続・ログイン
+RDPApp.launch_and_login(sleep_time=5)
 
 # 製品入出庫台帳
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
+RDPApp.navigate_tabs(4)
 pyautogui.press("tab")
 pyautogui.press("right")
 pyautogui.press("down")
 pyautogui.press("enter")
 time.sleep(0.5)
-
-if today.month == 1:
-    lastmonth_start = dt.date(year=today.year - 1, month=12, day=1)
-else:
-    lastmonth_start = dt.date(year=today.year, month=today.month - 1, day=1)    # 先月の初日を取得
-
-thismonth_start = dt.date(month=today.month, year=today.year, day=1)        # 今月の初日を取得
-lastmonth_end = thismonth_start - dt.timedelta(days=1)                      # 今月1日から、-1日することで先月の最終日を取得
 
 format_lastmonth_start = lastmonth_start.strftime("%Y%m%d")
 format_lastmonth_end = lastmonth_end.strftime("%Y%m%d")
