@@ -33,6 +33,52 @@
 
 ---
 
+## 🚀 起動方法
+
+### 前提条件
+
+```bash
+# 必要ライブラリのインストール
+pip install pyautogui pywin32 python-docx jpholiday pyperclip
+```
+
+### 各プロジェクトの実行
+
+#### 16時印刷
+
+```bash
+cd 16時印刷/16時印刷
+python main.py
+```
+
+#### 大麦完了報告
+
+```bash
+cd 大麦完了報告
+python _main_improved.py
+```
+
+#### 棚卸（各ステップ）
+
+```bash
+# 例: 棚卸入力
+cd 棚卸/00_棚卸入力
+python _main.py
+
+# 例: 親会社報告
+cd 棚卸/02_親会社報告(月次確定後)
+python _main.py
+```
+
+### 注意事項
+
+- **Windows環境専用**（win32com.client, pyautoguiを使用）
+- **ネットワークドライブへの接続が必要**（`\\MC10\share`）
+- **Excel/Wordが事前にインストールされていること**
+- **画面解像度・UI配置に依存**（config.pyで座標を調整）
+
+---
+
 ## 📁 プロジェクト詳細
 
 ### 1. 16時印刷
