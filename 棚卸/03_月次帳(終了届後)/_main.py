@@ -17,14 +17,14 @@ while tenth.weekday() >= 5 or jpholiday.is_holiday(tenth):
 last_month = today - dt.timedelta(days=20)
 print(last_month)
 formatted_month = last_month.strftime("%Y.%m")
-if today.month == 1:
+if today.month == 4:
     formatted_year = str(today.year - 1)
 else:
     formatted_year = str(today.year)
 
 # アプリ起動
 subprocess.run(["mstsc.exe", r"C:\Users\USER06\Desktop\OAシステム.rdp"])
-pyautogui.sleep(5)
+pyautogui.sleep(3)
 
 # 起動後アプリの対象クリック、ログイン処理
 pyautogui.click(x=826, y=448)
@@ -75,14 +75,13 @@ for item in items:
     pyautogui.click(x=1899, y=14)           # 閉じるボタンをクリック
     time.sleep(1)
 
-pyautogui.press("F12")      # 棚卸チェックリスト画面終了
 print("--------------------棚卸チェックリストの処理が終了しました。")
 
 # 棚卸表のOUT出力
-time.sleep(1)
+time.sleep(1)               # 棚卸チェックリストの終わりから開始
+pyautogui.press("F12")
 pyautogui.press("tab")
 pyautogui.press("enter")
-time.sleep(0.5)
 pyautogui.write(formatted_month)
 pyautogui.press("F6")
 pyautogui.press("enter")
@@ -115,7 +114,7 @@ name = f"{formatted_month}_製品入出庫表"
 pyperclip.copy(name)
 pyautogui.hotkey("ctrl", "v")
 pyautogui.press("enter", presses=2, interval=1)
-time.sleep(2)
+time.sleep(1)
 pyautogui.click(x=1899, y=14)           # 閉じるボタンをクリック
 pyautogui.press("F12")
 pyautogui.press("e")
@@ -123,33 +122,23 @@ pyautogui.press("e")
 print("--------------------製品入出庫表の処理が終了しました。")
 
 # 棚卸表のフォルダ移動
-import os
 import shutil
 before_path = r"\\MC10\share\OA\EXCEL\OUT\TANAOROSI_HYO.XLS"
 output_path = fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_month}月\08　月次帳\4 棚卸表"
 shutil.copy(before_path, output_path)
-os.rename(fr"{output_path}\TANAOROSI_HYO.XLS", fr"{output_path}\{formatted_month}_TANAOROSI_HYO.XLS")
-
-# 棚卸表のpdf変換
-import win32com.client as win32
-excel = win32.Dispatch("Excel.Application")
-excel.Visible = False
-filepath = fr"{output_path}\{formatted_month}_TANAOROSI_HYO.XLS"
-wb = excel.Workbooks.Open(filepath)
-wb.Sheets(1).Select()
-output_pdf_path = fr"{output_path}\{formatted_month}_TANAOROSI_HYO.pdf"
-excel.ActiveSheet.ExportAsFixedFormat(0, output_pdf_path)
-wb.Close(SaveChanges=True)
 
 print("--------------------棚卸表の処理が終了しました。")
 
 # 検尺表 を作成してエクスポート
+import win32com.client as win32
+excel = win32.Dispatch("Excel.Application")
+excel.Visible = False
 filepath = r"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\検尺値入力表.xls"
 wb = excel.Workbooks.Open(filepath)
 
 wb.Sheets(7).Select()                           # シートのグループ化解除
 
-format_month = last_month.strftime("%Y%m")      # "YYYYMM"形式
+format_month = last_month.strftime("%Y%m")
 wb.Sheets(7).Range("L1").Value = format_month   # 更新のための処理
 wb.RefreshAll()
 time.sleep(1)

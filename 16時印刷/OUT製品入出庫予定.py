@@ -1,16 +1,16 @@
 import time
 import get_next_workday as gnw
 import win32com.client as w32
-import pyautogui as pyA
+import pyautogui
 
-pyA.click(x=700, y=302)                             # 受付業務タグをクリック
+pyautogui.click(x=700, y=302)                             # 受付業務タグをクリック
 time.sleep(0.5)
-pyA.click(x=761, y=448)                             # 製造入出庫予定照会をクリック
+pyautogui.click(x=761, y=448)                             # 製造入出庫予定照会をクリック
 time.sleep(1)
-pyA.press("F5")                                     # 表示ボタン
+pyautogui.press("F5")                                     # 表示ボタン
 time.sleep(0.7)
-pyA.press("Tab", presses=2, interval=0.1)
-pyA.press("Enter")                                  # OUT出力
+pyautogui.press("Tab", presses=2, interval=0.1)
+pyautogui.press("Enter")                                  # OUT出力
 time.sleep(1)
 
 def main():

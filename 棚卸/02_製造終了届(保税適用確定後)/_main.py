@@ -20,16 +20,10 @@ while tenth.weekday() >= 5 or jpholiday.is_holiday(tenth):
 last_month = today - dt.timedelta(days=20)
 print(last_month)
 formatted_month = last_month.strftime("%Y.%m")
-if today.month == 1:
+if today.month == 4:
     formatted_year = str(today.year - 1)
 else:
     formatted_year = str(today.year)
-
-
-
-# まず手差しの印刷用紙をセットするよう促す
-pyautogui.alert("製造終了届の処理を開始します。\n最初に、プリンターの手差しトレイにA4用紙をセットしてください。\nセット後、OKを押してください。")
-
 
 # アプリ起動
 subprocess.run(["mstsc.exe", r"C:\Users\USER06\Desktop\OAシステム.rdp"])
@@ -42,28 +36,19 @@ pyautogui.press("enter", presses=3, interval=0.5)
 time.sleep(2)
 
 # 終了届をOUT出力
-pyautogui.hotkey("ctrl", "pageup")  # 月次処理を選択
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.hotkey("ctrl", "pageup")
-pyautogui.press("tab")
-pyautogui.press("right", presses=2, interval=0.2)
-pyautogui.press("enter")  # 製造終了届を選択
-time.sleep(2)
+pyautogui.click(x=1254, y=307)  # 月次処理を選択
+pyautogui.click(x=1122, y=373)  # 製造終了届を選択
+time.sleep(0.5)
 pyautogui.write(last_month.strftime('%Y%m'), interval=0.1)   # 年月を入力
 pyautogui.press("enter")
 pyautogui.write(tenth.strftime("%Y%m%d"), interval=0.1) # 年月日を入力
-pyautogui.press("F6")
-pyautogui.press("enter")       # 終了届を出力
-time.sleep(3)
-pyautogui.press("F12")
+pyautogui.press("enter", presses=3, interval=0.3)       # 終了届を出力
 time.sleep(1)
+pyautogui.press("F12")
 
 # 法定台帳を法定台帳フォルダにpdf保存
-pyautogui.press("down")
-pyautogui.press("enter")  # 法定台帳を選択
-time.sleep(2)
+pyautogui.click(x=1085, y=410)  # 法定台帳を選択
+time.sleep(0.5)
 pyautogui.write(last_month.strftime('%Y%m'), interval=0.1)      # 年月を入力
 pyautogui.press("enter")
 
@@ -77,27 +62,26 @@ for item in items:
     pyautogui.press('backspace', presses=4, interval=0.3)       # 入力されている原料コードを消す
     pyautogui.write(item["code"], interval=0.1)                 # 原料コード
     pyautogui.press("F6")
-    time.sleep(2)
+    time.sleep(1)
     pyautogui.press("enter")
     time.sleep(4)
     pyautogui.click(x=781, y=37)                                # エクスポートをクリック
-    time.sleep(2)
+    time.sleep(0.5)
     pyautogui.click(x=364, y=76)                                # 保存先をクリック
 
     path = fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_month}月\07　終了届\1 法定台帳\{item['folder']}"
     pyperclip.copy(path)
-    pyautogui.hotkey("ctrl", "v")                               # item["folder"]のフォルダーパスを張り付ける
+    pyautogui.hotkey("ctrl", "v")                               # item["folder"]のフォルダーパスを張り付ける# 
 
     pyautogui.press("enter")
-    time.sleep(2)
+    time.sleep(0.2)
     pyautogui.press("tab", presses=6, interval=0.2)
 
     name = fr"法定台帳_{item['label']}_{formatted_month}"        # item['label']の名前で、pdfファイル保存
     pyperclip.copy(name)
-    
     pyautogui.hotkey("ctrl", "v")
     pyautogui.press("enter", presses=2, interval=1)
-    time.sleep(2)
+    time.sleep(1)
     pyautogui.click(x=1899, y=14)   # 閉じるボタン
 
 excel = win32com.Dispatch("Excel.Application")
@@ -117,8 +101,8 @@ def print_excel(filepath, fit_to_one_page=False):   # 印刷の関数　(=False 
             sheet.PageSetup.Zoom = False
             sheet.PageSetup.FitToPagesWide = 1
             sheet.PageSetup.FitToPagesTall = 1
-    wb.PrintOut()
-    wb.Close(SaveChanges=False)
+        wb.PrintOut()
+        wb.Close(SaveChanges=False)
 
 for i, file in enumerate(filepath_list[0:3]):       # 終了届1-3までを印刷
     print_excel(file, fit_to_one_page=(i == 1))     # (i == 1)繰り返し２回目を指定
@@ -186,5 +170,3 @@ before_path = [
 output_path = fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_month}月\07　終了届\3 製造終了届"
 for file in before_path:
     shutil.copy(file, output_path)
-
-print("製造終了届の処理が完了しました。")

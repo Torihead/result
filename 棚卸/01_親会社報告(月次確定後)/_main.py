@@ -6,17 +6,17 @@ from win32com.client import Dispatch
 
 # 割戻表作成の関数の呼び出し
 import 割戻表 as wri
-wri.main()
+wri.create_割戻表()
 
 # 親会社報告書の関数を呼び出し
 import 親会社報告書 as oya
-oya.main()
+oya.create_親会社報告書()
 
 today = dt.datetime.now()                               # 本日の日付を取得
 last_month = today - dt.timedelta(days=10)              # 先月
 formatted_date = last_month.strftime("%Y.%m")           # 現在の日付をYYYY.MM形式で取得
 formatted_month = f"{formatted_date}_"                  # "YYYY.MM_"に変換
-if today.month == 1:
+if today.month == 4:
     formatted_year = str(today.year - 1)
 else:
     formatted_year = str(today.year)
@@ -78,10 +78,6 @@ def create_shortcut(target_path, shortcut_name, shortcut_dir):
 for file in genryouNSK:
     filename = os.path.splitext(os.path.basename(file))[0]
     create_shortcut(file, filename, shortcut_folder)
-
-# 在庫証明の関数の呼び出し
-import 在庫証明 as zaiko
-zaiko.main()
 
 print("--------------------ショートカットの作成を完了しました。")
 print("全ての処理を完了しました。")

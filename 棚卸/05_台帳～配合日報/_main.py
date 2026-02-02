@@ -18,7 +18,7 @@ while tenth.weekday() >= 5 or jpholiday.is_holiday(tenth):
 last_month = today - dt.timedelta(days=20)
 print(last_month)
 formatted_month = last_month.strftime("%Y.%m")
-if today.month == 1:
+if today.month == 4:
     formatted_year = str(today.year - 1)
 else:
     formatted_year = str(today.year)
@@ -44,10 +44,7 @@ pyautogui.press("down")
 pyautogui.press("enter")
 time.sleep(0.5)
 
-if today.month == 1:
-    lastmonth_start = dt.date(year=today.year - 1, month=12, day=1)
-else:
-    lastmonth_start = dt.date(year=today.year, month=today.month - 1, day=1)    # 先月の初日を取得
+lastmonth_start = dt.date(month=today.month - 1, year=today.year, day=1)    # 先月の初日を取得
 
 thismonth_start = dt.date(month=today.month, year=today.year, day=1)        # 今月の初日を取得
 lastmonth_end = thismonth_start - dt.timedelta(days=1)                      # 今月1日から、-1日することで先月の最終日を取得
@@ -80,28 +77,14 @@ name_ownhouse = f"{formatted_month}_製品入出庫台帳.pdf"
 pyperclip.copy(name_ownhouse)
 pyautogui.hotkey("ctrl", "v")
 pyautogui.press("enter", presses=2, interval=1)
-time.sleep(2)
-pyautogui.click(x=1899, y=14)           # 閉じるボタンをクリック
 time.sleep(1)
-pyautogui.press("F12")
-time.sleep(0.5)
-pyautogui.press("enter")
+pyautogui.click(x=1899, y=14)           # 閉じるボタンをクリック
 time.sleep(0.5)
 
 # 全倉庫の製品入出庫台帳
-pyautogui.press("tab", presses=2, interval=0.2)
-
-pyautogui.write(format_lastmonth_start, interval=0.2)       # 開始日の入力
-pyautogui.press("enter")
-pyautogui.write(format_lastmonth_end, interval=0.2)         # 終了日の入力
-pyautogui.press("enter")
+pyautogui.hotkey("shift", "tab")
+pyautogui.press("backspace")
 pyautogui.press("F6")
-time.sleep(0.5)
-pyautogui.press("enter")
-time.sleep(4)
-pyautogui.click(x=780, y=36)            # エクスポートをクリック
-time.sleep(0.5)
-pyautogui.click(x=364, y=76)            # 保存先をクリック
 
 path_allhouse = fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_month}月\10　製品入出庫台帳\全倉庫"
 pyperclip.copy(path_allhouse)
@@ -114,12 +97,9 @@ name_allhouse = f"{formatted_month}_ALL_製品入出庫台帳.pdf"
 pyperclip.copy(name_allhouse)
 pyautogui.hotkey("ctrl", "v")
 pyautogui.press("enter", presses=2, interval=1)
-time.sleep(2)
+time.sleep(1)
 pyautogui.click(x=1899, y=14)           # 閉じるボタンをクリック
-time.sleep(0.5)
 pyautogui.press("F12")
-time.sleep(0.5)
-print("--------------------製品入出庫台帳の処理が終了しました。")
 
 # 原料入出庫台帳
 pyautogui.press("down")
@@ -136,7 +116,7 @@ pyautogui.click(x=780, y=36)            # エクスポートをクリック
 time.sleep(1)
 pyautogui.click(x=364, y=76)            # 保存先をクリック
 
-path_genryou = fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_month}月\11　原料入出庫台帳"
+path_genryou = fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_month}月\\11　原料入出庫台帳"
 pyperclip.copy(path_genryou)
 pyautogui.hotkey("ctrl", "v")
 pyautogui.press("enter")
@@ -150,8 +130,6 @@ pyautogui.press("enter", presses=2, interval=1)
 time.sleep(1)
 pyautogui.click(x=1899, y=14)           # 閉じるボタンをクリック
 pyautogui.press("F12")
-
-print("--------------------原料入出庫台帳の処理が終了しました。")
 
 # 半製品入出庫表、台帳
 path_cyukan_daityou = fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_month}月\13　半製品入出庫"    # 台帳のパス、ファイル名
@@ -191,7 +169,6 @@ for item in hanseihin_list:
     pyautogui.click(x=1899, y=14)           # 閉じるボタンをクリック
     pyautogui.press("F12")
     time.sleep(1)
-print("--------------------半製品入出庫の処理が終了しました。")
 
 # 配合日報・集計
 pyautogui.press("down")
@@ -228,7 +205,3 @@ pyautogui.click(x=1899, y=14)           # 閉じるボタンをクリック
 pyautogui.press("F12")
 time.sleep(1)
 pyautogui.press("e")
-
-print("--------------------配合実績の処理が終了しました。")
-
-print("台帳～配合日報の全処理を完了しました。")

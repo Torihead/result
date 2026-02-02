@@ -5,7 +5,6 @@ import win32com.client as w32
 
 print("--------------------処理を開始します。")
 
-# 証明依頼書から完了作成までつながってるので、証明依頼書を最初に実行している。
 import 証明依頼書
 証明依頼書.create_証明依頼書()
 
@@ -17,13 +16,12 @@ before_path_list = [
     ]
 
 contract = (input("契約日を入力してください(例 2025/4/1): "))
-while True:
-    try:
-        dt_obj = dt.datetime.strptime(contract, "%Y/%m/%d") # 日付の形式をYYYY/m/dに変換
-        formatted_date = dt_obj.strftime("%Y.%m.%d")        # 変換後の形式を保存
-        break
-    except ValueError:
-        print("日付の形式が正しくありません。YYYY/m/dの形式で入力してください。")
+try:
+    dt_obj = dt.datetime.strptime(contract, "%Y/%m/%d") # 日付の形式をYYYY/m/dに変換
+    formatted_date = dt_obj.strftime("%Y.%m.%d")        # 変換後の形式を保存
+except ValueError:
+    print("日付の形式が正しくありません。YYYY/m/dの形式で入力してください。")
+    exit()
 
 while True:
     partner = input("取引先の番号を入力してください\n \
@@ -45,20 +43,6 @@ after_path_list = [
     fr"\\MC10\share\OA\EXCEL\OUT\{filename}KAKO_HOKOKU4.XLS",
     fr"\\MC10\share\OA\EXCEL\OUT\{filename}証明依頼書.docx"
     ]
-
-# 全Excelを閉じる
-excel = w32.Dispatch("Excel.Application")
-excel.Visible = True
-file_path_list = [
-                r"\\MC10\share\OA\EXCEL\OUT\GMG_UKHRI_DAI.xlsx",
-                r"\\MC10\share\OA\EXCEL\OUT\KAKO_HOKOKU4.XLS",
-                r"\\MC10\share\OA\EXCEL\OUT\KAKO_HOKOKU1.XLS"
-                ]
-for file in file_path_list:
-    print_wb = excel.Workbooks.Open(file) 
-    print_wb.PrintOut()
-    print_wb.Close(SaveChanges=True)
-excel.Quit()
 
 for before, after in zip(before_path_list, after_path_list):    # before_path_listとafter_path_listをペア(zip)にして繰り返し処理
     if os.path.exists(before):                                  

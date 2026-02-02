@@ -49,7 +49,7 @@ time.sleep(0.5)
 pyautogui.write(formatted_month, interval=0.2)
 pyautogui.press("F6")
 pyautogui.press("enter")
-time.sleep(6)
+time.sleep(5)
 pyautogui.press("F12")
 pyautogui.press("e")
 
@@ -88,14 +88,13 @@ for sheet in [wb_R.Sheets(1), wb_K.Sheets(1)]:  # 年月の入力
     sheet.Range("B2").Value = format_year
     sheet.Range("D2").Value = format_month
 
-# 生産量の合計 tが切捨てされない場合の処理
+# 生産量の合計tonsが切捨てされない場合の処理
 wb_genryou = excel.Workbooks.Open(fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_month}月\05　原料入出庫表\{formatted_month}_GENRYO_NSK.XLS")
 ws_genryou = wb_genryou.Sheets(1)
 
-product_sum_tyosa = int(wb_source.Sheets(1).Range("BY13").Value)                          # 調査票の生産量合計
-last_row = wb_genryou.Sheets(1).Cells(wb_genryou.Sheets(1).Rows.Count, 6).End(-4162).Row  # F列最終行の取得
-val = wb_genryou.Sheets(1).Range(f"F{last_row}").Value                                    # 原料入出庫表の生産量合計
-product_sum_genryou = int(val / 1000)                                                     # 原料の生産量を切捨て処理した値
+product_sum_tyosa = int(wb_source.Sheets(1).Range("BY13").Value) # 調査票の生産量合計
+val = wb_genryou.Sheets(1).Range("F93").Value               # 原料入出庫表の生産量合計
+product_sum_genryou = int(val / 1000)                       # 原料の生産量を切捨て処理した値
 print(f"調査票の生産量合計: {product_sum_tyosa} , 原料入出庫表の生産量合計: {product_sum_genryou}")
 
 meetfeed_sum = wb_source.Sheets(1).Range("AY13").Value
@@ -105,8 +104,6 @@ if (product_sum_tyosa - 1) == product_sum_genryou:
     wb_source.Sheets(1).Range("AY13").Value = meetfeed_sum
 else:
     print("生産量の合計に差異はありません。調整は行いません。")
-
-product_sum_tyosa = int(wb_source.Sheets(1).Range("BY13").Value)                     # 数値の再取得
 print(f"調整後の肉牛用 合計: {meetfeed_sum}\n調整後の調査票の生産量合計: {product_sum_tyosa}")
 wb_genryou.Close(SaveChanges=False)
 
@@ -119,7 +116,6 @@ sheet1_column_paires = [
     (24, 63),   # X列 ← BK列
     (26, 72),   # Z列 ← BT列
     (14, 27),   # N列 ← AA列
-    (15, 32),   # O列 ← AE列
 ]
 
 # 転載処理
@@ -139,14 +135,8 @@ copy_value(wb_R.Sheets(1), wb_source.Sheets(1), 17, 27, sheet1_column_paires)
 copy_value(wb_K.Sheets(1), wb_source.Sheets(1), 18, 27, sheet1_column_paires)
 
 copy_value(wb_R.Sheets(1), wb_source.Sheets(1), 32, 43, sheet1_column_paires)
-#copy_value(wb_K.Sheets(1), wb_source.Sheets(1), 32, 43, sheet1_column_paires)  # 保護されてエラー出るので、下の行で代用
+# copy_value(wb_K.Sheets(1), wb_source.Sheets(1), 32, 43, sheet1_column_paires)  # なんでかエラー出るので、下の行で代用
 wb_K.Sheets(1).Range("N33").Value = wb_source.Sheets(1).Range("AA43").Value
-
-copy_value(wb_R.Sheets(1), wb_source.Sheets(1), 32, 43, sheet1_column_paires)
-#copy_value(wb_K.Sheets(1), wb_source.Sheets(1), 33, 43, sheet1_column_paires)  # 保護されてエラー出るので、下の行で代用
-wb_K.Sheets(1).Range("O33").Value = wb_source.Sheets(1).Range("AE43").Value
-
-print("--------------------Sheet1の処理が終了しました。")
 
 # sheet2枚目
 sheet2_column_paires = [
@@ -192,8 +182,6 @@ copy_value(wb_K.Sheets(2), wb_source.Sheets(2), 46, 46, sheet2_column_paires)
 copy_value(wb_R.Sheets(2), wb_source.Sheets(2), 48, 48, sheet2_column_paires)
 copy_value(wb_K.Sheets(2), wb_source.Sheets(2), 48, 48, sheet2_column_paires)
 
-print("--------------------Sheet2の処理が終了しました。")
-
 # sheet3枚目
 sheet3_column_paires = [
     (14, 18),    # N列 ← R列
@@ -201,8 +189,6 @@ sheet3_column_paires = [
 ]
 copy_value(wb_R.Sheets(3), wb_source.Sheets(3), 9, 11, sheet3_column_paires)
 copy_value(wb_K.Sheets(3), wb_source.Sheets(3), 9, 11, sheet3_column_paires)
-
-print("--------------------Sheet3の処理が終了しました。")
 
 # sheet4枚目
 sheet4_column_paires = [
@@ -225,14 +211,9 @@ copy_value(wb_K.Sheets(4), wb_source.Sheets(4), 15, 15, sheet4_column_paires)
 copy_value(wb_R.Sheets(4), wb_source.Sheets(4), 16, 16, sheet4_column_paires)
 copy_value(wb_K.Sheets(4), wb_source.Sheets(4), 16, 16, sheet4_column_paires)
 
-print("--------------------Sheet4の処理が終了しました。")
-
 wb_source.Close(SaveChanges=True)
 wb_R.Close(SaveChanges=True)
 wb_K.Close(SaveChanges=True)
 #wb_K.SaveAs(target_path_K, FileFormat=56)
 
 excel.Quit()
-
-
-print("とうもろこし調査票の全工程を完了しました。")

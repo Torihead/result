@@ -1,6 +1,5 @@
 import pyautogui
 import datetime as dt
-
 import get_next_workday as gnw
 today = dt.datetime.today()
 next_workday = gnw.get_next_weekday(today)

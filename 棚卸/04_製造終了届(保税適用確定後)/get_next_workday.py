@@ -13,4 +13,5 @@ def get_next_weekday(date):
 # 今日の日付を取得
 today = dt.datetime.today()
 next_workday = get_next_weekday(today)
-second_next_workday = get_next_weekday(next_workday)
+
+print(f"次の平日は: {next_workday.strftime('%Y%m%d')}")

@@ -1,25 +1,49 @@
+import subprocess
 import pyautogui
 import time
-import os
+import datetime as dt
+import jpholiday
 import win32com.client as win32
-from common_utils import get_date_info
-from app_automation import RDPApp, ExcelUtils
+import os
 
-# 日付情報を取得
-dates = get_date_info()
-formatted_month = dates['formatted_month']
-formatted_year = dates['formatted_year']
-this_month = dates['this_month']
-formad_month = this_month  # 互換性のため
+today = dt.date.today()
+year = today.year
+month = today.month
+tenth = dt.date(year, month, 10)
 
-print(f"formad_month={formad_month}")
+# 10日が土日祝日なら、前営業日に変更
+while tenth.weekday() >= 5 or jpholiday.is_holiday(tenth):
+    tenth -= dt.timedelta(days=1)
 
-# RDP接続・ログイン
-RDPApp.launch_and_login(sleep_time=3)
+# 先月の10日
+last_month = today - dt.timedelta(days=20)
+print(last_month)
+formatted_month = last_month.strftime("%Y.%m")
+if today.month == 4:
+    formatted_year = str(today.year - 1)
+else:
+    formatted_year = str(today.year)
 
-# アプリ操作でメニューへ移動
-RDPApp.navigate_tabs(5)
-RDPApp.press_multiple_tabs(3, interval=0.2)
+this_month = today.strftime("%Y.%m")
+formad_month = today.strftime("%Y.%m")
+print("formad_month=", formad_month)
+
+# アプリ起動
+subprocess.run(["mstsc.exe", r"C:\Users\USER06\Desktop\OAシステム.rdp"])
+pyautogui.sleep(3)
+
+# 起動後アプリの対象クリック、ログイン処理
+pyautogui.click(x=826, y=448)
+pyautogui.write("12", interval=0.1)
+pyautogui.press("enter", presses=3, interval=0.5)
+time.sleep(2)
+
+pyautogui.hotkey("ctrl", "pageup")
+pyautogui.hotkey("ctrl", "pageup")
+pyautogui.hotkey("ctrl", "pageup")
+pyautogui.hotkey("ctrl", "pageup")
+pyautogui.hotkey("ctrl", "pageup")
+pyautogui.press("tab", presses=3, interval=0.2)
 pyautogui.press("enter")
 time.sleep(1)
 

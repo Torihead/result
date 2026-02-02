@@ -1,19 +1,42 @@
+import subprocess
 import pyautogui
 import time
+import datetime as dt
+import jpholiday
 import win32com.client as win32
-from common_utils import get_date_info
-from app_automation import RDPApp, ExcelUtils
 
-# 日付情報を取得
-dates = get_date_info()
-formatted_month = dates['formatted_month']
-formatted_year = dates['formatted_year']
+today = dt.date.today()
+year = today.year
+month = today.month
+tenth = dt.date(year, month, 10)
 
-# RDP接続・ログイン
-RDPApp.launch_and_login(sleep_time=5)
+# 10日が土日祝日なら、前営業日に変更
+while tenth.weekday() >= 5   or jpholiday.is_holiday(tenth):
+    tenth -= dt.timedelta(days=1)
+    
+# 先月の10日
+last_month = today - dt.timedelta(days=20)
+print(last_month)
+formatted_month = last_month.strftime("%Y.%m")
+if today.month == 1:
+    formatted_year = str(today.year - 1)
+else:
+    formatted_year = str(today.year)
 
-# 原料比重メニューへ
-RDPApp.navigate_tabs(2)
+
+# アプリ起動
+subprocess.run(["mstsc.exe", r"C:\Users\USER06\Desktop\OAシステム.rdp"])
+pyautogui.sleep(5)
+
+# 起動後アプリの対象クリック、ログイン処理
+pyautogui.click(x=826, y=448)
+pyautogui.write("12", interval=0.1)
+pyautogui.press("enter", presses=3, interval=0.5)
+time.sleep(2)
+
+# 原料比重
+pyautogui.hotkey("ctrl", "pageup")
+pyautogui.hotkey("ctrl", "pageup")
 pyautogui.press("tab")
 pyautogui.press("enter")
 time.sleep(2)
@@ -25,7 +48,7 @@ wb = excel.Workbooks.Open(filepath)
 ws_seihin = wb.Sheets(2)
 ws_genryou = wb.Sheets(4)
 
-last_row = ExcelUtils.get_lastrow(ws_genryou)
+last_row = ws_genryou.Cells(ws_genryou.Rows.Count, 1).End(-4162).Row # xlUp
 
 genhizyu_list = []
 
@@ -55,7 +78,7 @@ pyautogui.press("enter")
 time.sleep(0.5)
 
 #製品比重
-last_row = ExcelUtils.get_lastrow(ws_seihin)
+last_row = ws_seihin.Cells(ws_genryou.Rows.Count, 1).End(-4162).Row # xlUp
 
 seihizyu_list = []
 
