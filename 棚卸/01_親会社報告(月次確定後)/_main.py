@@ -10,16 +10,17 @@ wri.create_割戻表()
 
 # 親会社報告書の関数を呼び出し
 import 親会社報告書 as oya
-oya.create_親会社報告書()
+oya.main()
 
 today = dt.datetime.now()                               # 本日の日付を取得
 last_month = today - dt.timedelta(days=10)              # 先月
 formatted_date = last_month.strftime("%Y.%m")           # 現在の日付をYYYY.MM形式で取得
 formatted_month = f"{formatted_date}_"                  # "YYYY.MM_"に変換
-if today.month == 4:
+if today.month <= 4:
     formatted_year = str(today.year - 1)
 else:
     formatted_year = str(today.year)
+print(formatted_year, formatted_month)
 
 os.startfile(fr"\\MC10\share\MICHINOK_共有\2.小島\終了報告書＆棚卸データ\{formatted_year}年度\{formatted_date}月")
 

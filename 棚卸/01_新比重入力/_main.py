@@ -18,7 +18,7 @@ while tenth.weekday() >= 5   or jpholiday.is_holiday(tenth):
 last_month = today - dt.timedelta(days=20)
 print(last_month)
 formatted_month = last_month.strftime("%Y.%m")
-if today.month == 1:
+if today.month <= 4:
     formatted_year = str(today.year - 1)
 else:
     formatted_year = str(today.year)

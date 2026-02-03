@@ -6,7 +6,7 @@ import datetime as dt
 def create_割戻表():
 
     excel = win.Dispatch("Excel.Application")
-    excel.Visible = False
+    excel.Visible = True
 
     file_paths = [
         r"\\MC10\share\OA\EXCEL\OUT\GENRYO_MODOSI1.XLS",
@@ -104,3 +104,6 @@ def create_割戻表():
 
     print("--------------------ファイルのリネームを完了しました。")
     print("割戻表と原料入出庫の処理が完了しました。")
+
+if __name__ == "__main__":
+    create_割戻表() 
